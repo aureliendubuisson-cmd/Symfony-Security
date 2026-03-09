@@ -11,22 +11,25 @@ use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\CsrfTokenBadge;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\CustomCredentials;
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\PassportInterface;
-use Symfony\Component\Security\Http\SecurityRequestAttributes;
 
 class LoginFormAuthenticator extends AbstractAuthenticator
 {
-    public function __construct(
-        private readonly UserRepository $userRepository,
-        private readonly RouterInterface $router
-    )
+    private UserRepository $userRepository;
+    private RouterInterface $router;
+
+    public function __construct(UserRepository $userRepository, RouterInterface $router)
     {
+        $this->userRepository = $userRepository;
+        $this->router = $router;
     }
 
     public function supports(Request $request): ?bool
@@ -43,6 +46,7 @@ class LoginFormAuthenticator extends AbstractAuthenticator
             new UserBadge($email, function($userIdentifier) {
                 // optionally pass a callback to load the User manually
                 $user = $this->userRepository->findOneBy(['email' => $userIdentifier]);
+
                 if (!$user) {
                     throw new UserNotFoundException();
                 }
@@ -54,12 +58,13 @@ class LoginFormAuthenticator extends AbstractAuthenticator
                 new CsrfTokenBadge(
                     'authenticate',
                     $request->request->get('_csrf_token')
-                )
+                ),
+                new RememberMeBadge(),
             ]
         );
     }
 
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): RedirectResponse
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
         return new RedirectResponse(
             $this->router->generate('app_homepage')
@@ -68,8 +73,8 @@ class LoginFormAuthenticator extends AbstractAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
+        $request->getSession()->set(Security::AUTHENTICATION_ERROR, $exception);
 
-        $request->getSession()->set(SecurityRequestAttributes::AUTHENTICATION_ERROR, $exception);
         return new RedirectResponse(
             $this->router->generate('app_login')
         );
