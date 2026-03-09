@@ -32,7 +32,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
-    private $plainPassword;
+    private ?string $plainPassword;
 
     public function getId(): ?int
     {
@@ -91,12 +91,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->password;
     }
 
-    #[\Deprecated]
-    public function eraseCredentials(): void
-    {
-        $this->plainPassword = null;
-    }
-
     public function getFirstName(): ?string
     {
         return $this->firstName;
@@ -124,5 +118,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->plainPassword = $plainPassword;
         return $this;
+    }
+
+    public function eraseCredentials(): void
+    {
     }
 }
