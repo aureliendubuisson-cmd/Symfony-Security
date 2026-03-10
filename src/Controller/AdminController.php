@@ -38,18 +38,18 @@ class AdminController extends AbstractController
                     'label' => 'Accidents',
                     'data' => [40, 66, 110, 20],
                     'backgroundColor' => [
-                      'rgb(255, 99, 132)',
-                      'rgb(54, 162, 235)',
-                      'rgb(255, 205, 86)'
+                        'rgb(255, 99, 132)',
+                        'rgb(54, 162, 235)',
+                        'rgb(255, 205, 86)'
                     ],
                     'hoverOffset' => 4,
                 ],
             ],
         ]);
-
-        return $this->render('admin/dashboard.html.twig', [
-            'chart' => $chart,
-            'chart2' => $chart2,
-        ]);
+    }
+    #[Route("/admin/login")]
+    public function adminLogin(): Response
+    {
+        return new Response('Pretend admin login page, that should be public');
     }
 }
