@@ -14,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class QuestionController extends AbstractController
 {
@@ -42,13 +43,14 @@ class QuestionController extends AbstractController
     }
 
     #[Route(path: '/questions/new')]
-    public function new()
+    #[IsGranted("ROLE_USER")]
+    public function new() : Response
     {
         return new Response('Sounds like a GREAT feature for V2!');
     }
 
     #[Route(path: '/questions/{slug}', name: 'app_question_show')]
-    public function show(Question $question)
+    public function show(Question $question): Response
     {
         if ($this->isDebug) {
             $this->logger->info('We are in debug mode!');
