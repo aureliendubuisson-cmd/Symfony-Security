@@ -8,10 +8,11 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
 
+
 class AdminController extends AbstractController
 {
     #[Route(path: '/admin', name: 'admin_dashboard')]
-    public function dashboard(ChartBuilderInterface $chartBuilder)
+    public function dashboard(ChartBuilderInterface $chartBuilder): Response
     {
         $chart = $chartBuilder->createChart(Chart::TYPE_LINE);
         $chart->setData([
@@ -46,10 +47,22 @@ class AdminController extends AbstractController
                 ],
             ],
         ]);
+        return $this->render('admin/dashboard.html.twig', [
+            'chart' => $chart,
+            'chart2' => $chart2,
+        ]);
     }
     #[Route("/admin/login")]
     public function adminLogin(): Response
     {
         return new Response('Pretend admin login page, that should be public');
+    }
+
+    #[Route("/admin/comments")]
+    public function adminComments(): Response
+    {
+
+        $this->denyAccessUnlessGranted('ROLE_COMMENT_ADMIN');
+        return new Response('Pretend comments admin page');
     }
 }
