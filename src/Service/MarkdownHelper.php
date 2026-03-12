@@ -4,6 +4,7 @@ namespace App\Service;
 
 use League\CommonMark\CommonMarkConverter;
 use Psr\Log\LoggerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Contracts\Cache\CacheInterface;
 
 class MarkdownHelper
@@ -13,7 +14,8 @@ class MarkdownHelper
     public function __construct(
         private readonly CacheInterface $cache,
         private readonly bool                    $isDebug,
-        private readonly LoggerInterface         $mdLogger
+        private readonly LoggerInterface         $mdLogger,
+        private readonly Security $security
     ) {
         // On instancie directement le parseur de la librairie League
         $this->markdownConverter = new CommonMarkConverter();
@@ -23,6 +25,12 @@ class MarkdownHelper
     {
         if (stripos($source, 'cat') !== false) {
             $this->mdLogger->info('Meow!');
+        }
+
+        if ($this->security->getUser()) {
+            $this->mdLogger->info('Rendering markdown for {user}', [
+                'user' => $this->security->getUser()->getUserIdentifier()
+            ]);
         }
 
         if ($this->isDebug) {
