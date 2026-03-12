@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\User;
 use League\CommonMark\CommonMarkConverter;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
