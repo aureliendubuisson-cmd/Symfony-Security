@@ -9,8 +9,9 @@ use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-class AnswerController extends AbstractController
+class AnswerController extends BaseController
 {
     #[Route(path: '/answers/popular', name: 'app_popular_answers')]
     public function popularAnswers(AnswerRepository $answerRepository, Request $request)
@@ -24,9 +25,15 @@ class AnswerController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/answers/{id}/vote', methods: 'POST', name: 'answer_vote')]
+    #[Route(path: '/answers/{id}/vote', name: 'answer_vote', methods: 'POST')]
+    #[IsGranted("IS_AUTHENTICATED_REMEMBERED")]
     public function answerVote(Answer $answer, LoggerInterface $logger, Request $request, EntityManagerInterface $entityManager)
     {
+        $logger->info('{user} is voting on answer {answer}!', [
+            'user' => $this->getUser()->getEmail(),
+            'answer' => $answer->getId(),
+        ]);
+
         $data = json_decode($request->getContent(), true);
         $direction = $data['direction'] ?? 'up';
 
