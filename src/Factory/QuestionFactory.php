@@ -48,6 +48,7 @@ final class QuestionFactory extends PersistentObjectFactory
             ),
             'askedAt' => self::faker()->dateTimeBetween('-100 days', '-1 minute'),
             'votes' => rand(-20, 50),
+            'owner' => UserFactory::new(),
         ];
     }
 
