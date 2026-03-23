@@ -141,7 +141,7 @@ class Question
     }
 
     /**
-     * @return Collection|Answer[]
+     * @return Collection<Answer>
      */
     public function getAnswers(): Collection
     {
@@ -176,7 +176,7 @@ class Question
     }
 
     /**
-     * @return Collection|QuestionTag[]
+     * @return Collection<QuestionTag>
      */
     public function getQuestionTags(): Collection
     {
