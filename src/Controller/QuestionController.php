@@ -63,11 +63,8 @@ class QuestionController extends AbstractController
     #[Route(path:'/questions/edit/{slug}', name: 'app_question_edit')]
     public function edit(Question $question)
     {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
 
-        if ($question->getOwner() !== $this->getUser()) {
-            throw $this->createAccessDeniedException('You are not the owner!');
-        }
+        $this->denyAccessUnlessGranted('EDIT', $question);
 
         return $this->render('question/edit.html.twig', [
             'question' => $question,
