@@ -13,20 +13,17 @@ final class QuestionVoter extends Voter
 {
     public const EDIT = 'POST_EDIT';
     public const VIEW = 'POST_VIEW';
-    private Security $security;
 
-    public function __construct(Security $security)
+    public function __construct(
+        private readonly Security $security
+    )
     {
-
-        $this->security = $security;
     }
 
     protected function supports(string $attribute, mixed $subject): bool
     {
-        // replace with your own logic
-        // https://symfony.com/doc/current/security/voters.html
         return in_array($attribute, ['EDIT'])
-            && $subject instanceof \App\Entity\Question;
+            && $subject instanceof Question;
     }
 
     /**
@@ -52,11 +49,9 @@ final class QuestionVoter extends Voter
         }
 
         // ... (check conditions and return true to grant permission) ...
-        switch ($attribute) {
-            case 'EDIT':
-                return $user === $subject->getOwner();
-        }
-
-        return false;
+        return match ($attribute) {
+            'EDIT' => $user === $subject->getOwner(),
+            default => false
+        };
     }
 }
