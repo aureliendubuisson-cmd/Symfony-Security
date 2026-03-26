@@ -15,7 +15,7 @@ class CheckVerifiedUserSubscriber implements EventSubscriberInterface
     public function onCheckPassport(CheckPassportEvent $event): void
     {
         $passport = $event->getPassport();
-        if ($passport instanceof UserPassportInterface) {
+        if (!$passport instanceof UserPassportInterface) {
             throw new \Exception('Unexpected passport type');
         }
 
