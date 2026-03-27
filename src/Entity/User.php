@@ -15,6 +15,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Serializer\Attribute\Groups;
 
+/**
+ * @method isToAuthenticationEnabled()
+ */
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
@@ -219,7 +222,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, TwoFact
 
     public function getTotpAuthenticationUsername(): string
     {
-        return $this->getUserIdentifier()
+        return $this->getUserIdentifier();
     }
 
     public function getTotpAuthenticationConfiguration(): ?TotpConfigurationInterface
